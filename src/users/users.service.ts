@@ -13,12 +13,17 @@ export class UsersService {
   async createUser(userInfo: CreateUserDto) {
     const result = await this.userRepo.save({
       email: userInfo.email,
-      password: await bcrypt.hash(userInfo.password, 10)
+      password: await bcrypt.hash(userInfo.password, 10),
+      role: userInfo.role
     })
     return {id: result.id }
   }
   async findUser(userInfo: Partial<UserEntity>) {
     const result = await this.userRepo.findOne(userInfo);
+    return result;
+  }
+  async updateUser(criteria: Partial<UserEntity>, data: Partial<UserEntity>) {
+    const result = await this.userRepo.update(criteria, data);
     return result;
   }
 }

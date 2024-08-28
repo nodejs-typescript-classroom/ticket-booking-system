@@ -6,6 +6,8 @@ import { isUUID } from 'class-validator';
 describe('AppController (e2e)', () => {
   let app: INestApplication;
   let userId: string;
+  let refreshToken: string;
+  let accessToken: string;
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
@@ -40,7 +42,8 @@ describe('AppController (e2e)', () => {
       .post('/auth/register')
       .send({
         email: 'yu@hotmail.com',
-        password: '1@q#Abz%'
+        password: '1@q#Abz%',
+        role: 'admin'
       })
       .expect(201)
       .expect(({ body }) => {
@@ -48,10 +51,28 @@ describe('AppController (e2e)', () => {
         expect(isUUID(body.id)).toBeTruthy()
       });
   });
+  // given login with correct credential
+  it('/auth/login (POST)', () => {
+    const agent = request(app.getHttpServer());
+    return agent
+      .post('/auth/login')
+      .send({
+        email: 'yu@hotmail.com',
+        password: '1@q#Abz%'
+      })
+      .expect(201)
+      .expect(({body}) => {
+        refreshToken = body.refresh_token;
+        accessToken = body.access_token;
+        expect(body).toHaveProperty('access_token');
+        expect(body).toHaveProperty('refresh_token');
+      })
+  })
   it('/users/:userId (GET)', () => {
     const agent = request(app.getHttpServer());
     return agent
       .get(`/users/${userId}`)
+      .set('Authorization', accessToken)
       .expect(200)
       .expect(({ body }) => {
         expect(body.email).toEqual('yu@hotmail.com')
@@ -61,6 +82,26 @@ describe('AppController (e2e)', () => {
     const agent = request(app.getHttpServer());
     return agent
       .get(`/users/${crypto.randomUUID()}`)
+      .set('Authorization', accessToken)
       .expect(404);
+  })
+  // given login with wrong credential with Unauthorizatiion
+  it('/auth/login (POST) reject with Unauthorization', () => {
+    const agent = request(app.getHttpServer());
+    return agent
+      .post('/auth/login')
+      .send({
+        email: 'yu@hotmail.com',
+        password: '1@q#Abz%1'
+      })
+      .expect(401)
+  })
+  // given refesh token with exist users
+  it('/auth/refresh (POST)', () => {
+    const agent = request(app.getHttpServer());
+    return agent
+      .post('/auth/refresh')
+      .set('Authorization', refreshToken)
+      .expect(201)
   })
 });

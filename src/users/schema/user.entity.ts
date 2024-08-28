@@ -1,4 +1,5 @@
-import { IsEmail, IsString, IsUUID } from 'class-validator';
+import { IsEmail, IsOptional, IsString, IsUUID } from 'class-validator';
+import { Role } from './role.type';
 
 export class UserEntity {
   @IsUUID()
@@ -7,4 +8,9 @@ export class UserEntity {
   email: string;
   @IsString()
   password: string;
+  @IsString()
+  @IsOptional()
+  refreshToken?: string;
+  @IsString()
+  role: Role = 'attendee';
 }

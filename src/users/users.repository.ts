@@ -5,4 +5,5 @@ export abstract class UserRepository {
   abstract save(userInfo: CreateUserDto): Promise<UserEntity>
   abstract findOne(criteria: Partial<UserEntity>): Promise<UserEntity>
   abstract find(criteria: Partial<UserEntity>): Promise<UserEntity[]>
+  abstract update(criteria: Partial<UserEntity>, data: Partial<UserEntity>): Promise<UserEntity>
 } 
