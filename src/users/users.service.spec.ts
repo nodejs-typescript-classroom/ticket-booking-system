@@ -1,14 +1,18 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { UsersService } from './users.service';
 import { isUUID } from 'class-validator';
-import { UserStore } from './users.store';
+import { UserStore } from '../../mocked/users.store';
+import { UserDBStore } from './users-db.store';
 
 describe('UsersService', () => {
   let service: UsersService;
   let userId: string;
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [UsersService, UserStore],
+      providers: [UsersService, {
+        provide: UserDBStore,
+        useClass: UserStore,
+      }],
     }).compile();
 
     service = module.get<UsersService>(UsersService);

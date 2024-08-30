@@ -3,12 +3,15 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
 import { AppModule } from './../src/app.module';
 import { isUUID } from 'class-validator';
+import { StartedPostgreSqlContainer } from '@testcontainers/postgresql';
 describe('AppController (e2e)', () => {
   let app: INestApplication;
   let userId: string;
   let refreshToken: string;
   let accessToken: string;
+  let postgresql: StartedPostgreSqlContainer;
   beforeAll(async () => {
+    postgresql = global.postgresql;
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
@@ -20,6 +23,10 @@ describe('AppController (e2e)', () => {
     }))
     await app.init();
   });
+  afterAll(async () => {
+    await app.close();
+    await postgresql.stop();
+  })
 
   it('/ (GET)', () => {
     return request(app.getHttpServer())

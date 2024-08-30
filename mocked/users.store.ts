@@ -1,8 +1,7 @@
 import { NotFoundException } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UserEntity } from './schema/user.entity';
-import { UserRepository } from './users.repository';
-import { unescape } from 'querystring';
+import { UserRepository } from '../src/users/users.repository';
+import { UserEntity } from '../src/users/schema/user.entity';
+import { CreateUserDto } from '../src/users/dto/create-user.dto';
 
 export class UserStore implements UserRepository {
   users: UserEntity[] = [];

@@ -5,8 +5,9 @@ import { isJWT } from 'class-validator';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
-import { UserStore } from '../users/users.store';
+import { UserStore } from '../../mocked/users.store';
 import { NotFoundException, UnauthorizedException } from '@nestjs/common';
+import { UserDBStore } from '../users/users-db.store';
 
 
 describe('AuthService', () => {
@@ -32,7 +33,10 @@ describe('AuthService', () => {
             }
           }
         },
-      }, JwtService, UsersService, UserStore],
+      }, JwtService, UsersService, {
+        provide: UserDBStore,
+        useClass: UserStore
+      }],
     }).compile();
 
     service = module.get<AuthService>(AuthService);
