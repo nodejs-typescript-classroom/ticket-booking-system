@@ -15,9 +15,6 @@ export class UserDBStore implements UserRepository {
     user.id = crypto.randomUUID();
     user.email = userInfo.email;
     user.password = userInfo.password;
-    if (userInfo.role) {
-      user.role = userInfo.role;
-    }
     await this.userRepo.save(user);
     return user;
   }

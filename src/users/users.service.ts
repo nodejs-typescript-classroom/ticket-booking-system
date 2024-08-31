@@ -15,7 +15,6 @@ export class UsersService {
       const result = await this.userRepo.save({
         email: userInfo.email,
         password: await bcrypt.hash(userInfo.password, 10),
-        role: userInfo.role
       })
       return {id: result.id }
     } catch (error) {

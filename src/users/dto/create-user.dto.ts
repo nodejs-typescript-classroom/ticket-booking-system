@@ -9,7 +9,4 @@ export class CreateUserDto {
   @IsNotEmpty()
   @IsStrongPassword()
   password: string;
-  @IsString()
-  @IsOptional()
-  role?: Role;
 }

@@ -50,7 +50,6 @@ describe('AppController (e2e)', () => {
       .send({
         email: 'yu@hotmail.com',
         password: '1@q#Abz%',
-        role: 'admin'
       })
       .expect(201)
       .expect(({ body }) => {
@@ -64,7 +63,7 @@ describe('AppController (e2e)', () => {
     return agent
       .post('/auth/login')
       .send({
-        email: 'yu@hotmail.com',
+        email: 'admin@hotmail.com',
         password: '1@q#Abz%'
       })
       .expect(201)

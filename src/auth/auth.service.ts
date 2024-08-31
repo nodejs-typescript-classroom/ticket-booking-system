@@ -47,7 +47,6 @@ export class AuthService {
       const user = await this.userService.findUser({
         email
       });
-      
       const authenticated = await bcrypt.compare(password, user.password);
       if (!authenticated) {
         throw new UnauthorizedException();

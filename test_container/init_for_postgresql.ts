@@ -10,6 +10,8 @@ export const initPostgresql = async() => {
   global.postgresql = postgresql;
   const DB_URI = global.postgresql.getConnectionUri();
   process.env.DB_URI = DB_URI;
+  process.env.ADMIN_USER='admin@hotmail.com';
+  process.env.ADMIN_PASSWORD='1@q#Abz%';
   const datasource = await getDataSource(DB_URI);
   await datasource.runMigrations();
 }
