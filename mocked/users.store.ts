@@ -11,9 +11,6 @@ export class UserStore implements UserRepository {
     newUser.id = id;
     newUser.email = userInfo.email;
     newUser.password = userInfo.password;
-    if (userInfo.role) {
-      newUser.role = userInfo.role;
-    }
     this.users.push(newUser);
     return newUser;
   }
