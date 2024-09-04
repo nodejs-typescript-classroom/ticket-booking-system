@@ -1,8 +1,8 @@
-import { NotFoundException } from '@nestjs/common';
-import { CreateEventDto, EventsResponse, PageInfoRequestDto } from './dto/event.dto';
-import { EventsRepository } from './events.repository';
-import { EventEntity } from './schema/event.entity';
-
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { CreateEventDto, EventsResponse, PageInfoRequestDto } from '../src/events/dto/event.dto';
+import { EventsRepository } from '../src/events/events.repository';
+import { EventEntity } from '../src/events/schema/event.entity';
+@Injectable()
 export class EventStore implements EventsRepository {
   events: EventEntity[] = new Array<EventEntity>();
   async save(eventInfo: CreateEventDto): Promise<EventEntity> {

@@ -4,6 +4,7 @@ import { CreateEventDto,GetEventsDto, PageInfoRequestDto, UpdateEventDto } from 
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/role.guard';
 import { Roles } from '../auth/roles.decorator';
+import { instanceToInstance, instanceToPlain, plainToClass } from 'class-transformer';
 @Injectable()
 @Controller('events')
 export class EventsController {

@@ -1,12 +1,12 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { EventsRepository } from './events.repository';
-import { EventStore } from './event.store';
 import { CreateEventDto, GetEventDto, GetEventsDto, PageInfoRequestDto, UpdateEventDto } from './dto/event.dto';
+import { EventDbStore } from './event-db.store';
 
 @Injectable()
 export class EventsService {
   constructor(
-    @Inject(EventStore)
+    @Inject(EventDbStore)
     private readonly eventRepo: EventsRepository
   ) {}
   async createEvent(eventInfo: CreateEventDto) {

@@ -2,15 +2,19 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { EventsService } from './events.service';
 import { CreateEventDto, GetEventsDto, PageInfoRequestDto } from './dto/event.dto';
 import { isUUID } from 'class-validator';
-import { EventStore } from './event.store';
+import { EventStore } from '../../mocked/event.store';
 import { NotFoundException } from '@nestjs/common';
+import { EventDbStore } from './event-db.store';
 
 describe('EventsService', () => {
   let service: EventsService;
   let eventId: string;
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [EventsService, EventStore],
+      providers: [EventsService, {
+        provide: EventDbStore,
+        useClass: EventStore,
+      }],
     }).compile();
 
     service = module.get<EventsService>(EventsService);

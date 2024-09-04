@@ -1,8 +1,8 @@
-import { NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { UserRepository } from '../src/users/users.repository';
 import { UserEntity } from '../src/users/schema/user.entity';
 import { CreateUserDto } from '../src/users/dto/create-user.dto';
-
+@Injectable()
 export class UserStore implements UserRepository {
   users: UserEntity[] = [];
   async save(userInfo: CreateUserDto): Promise<UserEntity> {

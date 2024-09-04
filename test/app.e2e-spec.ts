@@ -156,6 +156,20 @@ describe('AppController (e2e)', () => {
         expect(body.events.length).toEqual(1);
       });
   });
+  // given exist eventid with existed event
+  it('/events/:id (PATCH) with successfully updated event', () => {
+    const agent = request(app.getHttpServer());
+    return agent.patch(`/events/${eventId}`)
+      .set('Authorization', accessToken)
+      .send({
+        location: '台北小巨蛋'
+      })
+      .expect(200)
+      .expect(({ body }) => {
+        expect(body).toHaveProperty('name', '江惠演唱會');
+        expect(body).toHaveProperty('location', '台北小巨蛋')
+      });
+  });
   // given wrong token with get event
   it('/events/ (GET) reject with Uanuthorization', () => {
     const agent = request(app.getHttpServer());

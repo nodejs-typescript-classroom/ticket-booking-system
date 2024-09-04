@@ -35,7 +35,7 @@ export class UserDBStore implements UserRepository {
   async update(criteria: Partial<UserEntity>, data: Partial<UserEntity>): Promise<UserEntity> {
     const queryBuilder = this.userRepo.createQueryBuilder('users');
     const result = await queryBuilder.update<UserEntity>(UserEntity, data)
-      .where(criteria).updateEntity(true).execute();
+      .where(criteria).returning(['id', 'email', 'role', 'createdAt', 'updatedAt']).updateEntity(true).execute();
     const model: UserEntity = result.raw[0] as UserEntity;
     return model;
   }
