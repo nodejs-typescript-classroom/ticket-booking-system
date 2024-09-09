@@ -1,7 +1,8 @@
 import { BadRequestException } from '@nestjs/common';
 import { Transform, Type } from 'class-transformer';
-import { isISO8601, IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString, IsUUID, Min, ValidateNested } from 'class-validator';
+import { isISO8601, IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { EventEntity } from '../schema/event.entity';
+import { Pagination } from '../../pagination.dto';
 
 export class CreateEventDto {
   @IsString()
@@ -68,63 +69,7 @@ export class UpdateEventDto {
   @IsOptional()
   startDate?: Date;
 }
-export class PageInfoRequestDto {
-  @Min(0)
-  @IsNumber()
-  @IsOptional()
-  @Transform(({ value }) => {
-    const notANumber = isNaN(value);
-    if (notANumber) {
-      throw new BadRequestException({
-        message: `offset should be a integer`,
-        value: value,
-      });
-    }
-    try {
-      const result = parseInt(value);
-      return result;
-    } catch (error) {
-      throw new BadRequestException({
-        message: `offset should be a integer`,
-        value: value,
-      });    
-    }
-  })
-  offset: number = 0;
-  @IsPositive()
-  @IsNumber()
-  @IsOptional()
-  @Transform(({ value }) => {
-    const notANumber = isNaN(value);
-    if (notANumber) {
-      throw new BadRequestException({
-        message: `offset should be a integer`,
-        value: value,
-      });
-    }
-    try {
-      const result = parseInt(value);
-      return result;
-    } catch (error) {
-      throw new BadRequestException({
-        message: `offset should be a integer`,
-        value: value,
-      });    
-    }
-  })
-  limit: number = 20;  
-}
-export class Pagination {
-  @IsPositive()
-  @IsNumber()
-  offset: number
-  @IsPositive()
-  @IsNumber()
-  limit: number;
-  @IsPositive()
-  @IsNumber()
-  total: number;
-}
+
 export class EventsResponse {
   @ValidateNested({ each: true})
   @Type(() => EventEntity)

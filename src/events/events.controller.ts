@@ -1,10 +1,10 @@
 import { Body, Controller, Delete, Get, Injectable, Param, ParseUUIDPipe, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { EventsService } from './events.service';
-import { CreateEventDto,GetEventsDto, PageInfoRequestDto, UpdateEventDto } from './dto/event.dto';
+import { CreateEventDto, GetEventsDto, UpdateEventDto } from './dto/event.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/role.guard';
 import { Roles } from '../auth/roles.decorator';
-import { instanceToInstance, instanceToPlain, plainToClass } from 'class-transformer';
+import { PageInfoRequestDto } from '../pagination.dto';
 @Injectable()
 @Controller('events')
 export class EventsController {

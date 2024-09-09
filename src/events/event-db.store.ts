@@ -1,9 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateEventDto, PageInfoRequestDto, EventsResponse } from './dto/event.dto';
+import { CreateEventDto, EventsResponse } from './dto/event.dto';
 import { EventsRepository } from './events.repository';
 import { EventEntity } from './schema/event.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { PageInfoRequestDto } from '../pagination.dto';
 @Injectable()
 export class EventDbStore implements EventsRepository {
   constructor(

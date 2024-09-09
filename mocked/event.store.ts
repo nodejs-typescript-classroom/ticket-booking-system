@@ -1,7 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateEventDto, EventsResponse, PageInfoRequestDto } from '../src/events/dto/event.dto';
+import { CreateEventDto, EventsResponse } from '../src/events/dto/event.dto';
 import { EventsRepository } from '../src/events/events.repository';
 import { EventEntity } from '../src/events/schema/event.entity';
+import { PageInfoRequestDto } from '../src/pagination.dto';
 @Injectable()
 export class EventStore implements EventsRepository {
   events: EventEntity[] = new Array<EventEntity>();
@@ -25,7 +26,7 @@ export class EventStore implements EventsRepository {
     return this.events[foundIdx];
   }
   async find(criteria: Partial<EventEntity>, pageInfo: PageInfoRequestDto): Promise<EventsResponse> {
-    let filteredEvent: EventEntity[] = this.events.slice(pageInfo.offset, pageInfo.limit);
+    let filteredEvent: EventEntity[] = this.events.slice(pageInfo.offset, pageInfo.offset + pageInfo.limit);
     if (criteria.location) {
       filteredEvent = filteredEvent.filter((item) => item.location == criteria.location);
     }

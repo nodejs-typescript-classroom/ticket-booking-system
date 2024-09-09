@@ -7,9 +7,12 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { validateSchema } from './validate.schema';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { EventsModule } from './events/events.module';
+import { TicketsModule } from './tickets/tickets.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
+    EventEmitterModule.forRoot(),
     ConfigModule.forRoot({
       isGlobal: true,
       validationSchema: validateSchema,
@@ -32,7 +35,7 @@ import { EventsModule } from './events/events.module';
       },
       inject:[ConfigService]
     }),
-    UsersModule, AuthModule, EventsModule],
+    UsersModule, AuthModule, EventsModule, TicketsModule],
   controllers: [AppController],
   providers: [AppService],
 })

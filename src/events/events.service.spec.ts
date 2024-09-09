@@ -1,23 +1,32 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { EventsService } from './events.service';
-import { CreateEventDto, GetEventsDto, PageInfoRequestDto } from './dto/event.dto';
+import { CreateEventDto, GetEventsDto } from './dto/event.dto';
 import { isUUID } from 'class-validator';
 import { EventStore } from '../../mocked/event.store';
 import { NotFoundException } from '@nestjs/common';
 import { EventDbStore } from './event-db.store';
-
+import { PageInfoRequestDto } from '../pagination.dto';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+const mockedEventEmitter = {
+  emit: jest.fn().mockReturnValue({})
+}
 describe('EventsService', () => {
   let service: EventsService;
   let eventId: string;
+  let eventEmitter: EventEmitter2;
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [EventsService, {
         provide: EventDbStore,
         useClass: EventStore,
+      }, {
+        provide: EventEmitter2,
+        useValue: mockedEventEmitter,
       }],
     }).compile();
 
     service = module.get<EventsService>(EventsService);
+    eventEmitter = module.get<EventEmitter2>(EventEmitter2);
   });
 
   it('should be defined', () => {
@@ -45,6 +54,8 @@ describe('EventsService', () => {
     const result = await service.createEvent(createEventDto);
     expect(result).toHaveProperty('id');
     expect(isUUID(result.id)).toBeTruthy();
+    expect(eventEmitter.emit).toHaveBeenCalledTimes(1);
+    expect(eventEmitter.emit).toHaveBeenCalledWith("create-counter-event",{ eventId: result.id });
     eventId = result.id;
   });
   it('should return result event with given event id', async () => {

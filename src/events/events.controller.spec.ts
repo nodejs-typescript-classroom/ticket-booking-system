@@ -1,7 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { EventsController } from './events.controller';
 import { EventsService } from './events.service';
-import { CreateEventDto, GetEventsDto, PageInfoRequestDto, UpdateEventDto } from './dto/event.dto';
+import { CreateEventDto, GetEventsDto, UpdateEventDto } from './dto/event.dto';
+import { PageInfoRequestDto } from '../pagination.dto';
 
 
 describe('EventsController', () => {

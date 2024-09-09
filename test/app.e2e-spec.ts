@@ -11,6 +11,10 @@ describe('AppController (e2e)', () => {
   let accessToken: string;
   let postgresql: StartedPostgreSqlContainer;
   let eventId: string;
+  let attendeeIdToken: string;
+  let attendeeUserId: string;
+  let attendEventId: string;
+  let verifyTicketId: string;
   beforeAll(async () => {
     postgresql = global.postgresql;
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -55,6 +59,7 @@ describe('AppController (e2e)', () => {
       .expect(201)
       .expect(({ body }) => {
         userId = body.id;
+        attendeeUserId = body.id;
         expect(isUUID(body.id)).toBeTruthy()
       });
   });
@@ -208,6 +213,91 @@ describe('AppController (e2e)', () => {
             done(err);
           });
       });
+  });
+  it('/tickets (POST) create a ticket', (done) => {
+    const agent = request(app.getHttpServer());
+    agent.post('/events')
+      .send({
+        location: '台北大巨蛋',
+        name: '江惠演唱會',
+        startDate: '2024-10-01'
+      })
+      .set('Authorization', accessToken)
+      .expect(201)
+      .expect(({ body }) => {
+        expect(body).toHaveProperty('id');
+        expect(isUUID(body.id)).toBeTruthy();
+        attendEventId = body.id;
+      })
+      .end((err, res) => {
+        if (err) {
+          return done(err)
+        }
+        agent
+        .post('/auth/login')
+        .send({
+          email: 'yu@hotmail.com',
+          password: '1@q#Abz%'
+        })
+        .expect(201)
+        .expect(({ body }) => {
+          expect(body).toHaveProperty('access_token');
+          attendeeIdToken = body.access_token;
+        })
+        .end((err, res) => {
+          if (err) {
+            done(err)
+            return
+          }
+          agent.post('/tickets')
+          .send({
+            eventId: attendEventId,
+            userId: attendeeUserId
+          })
+          .set('Authorization', attendeeIdToken)
+          .expect(201)
+          .expect(({ body }) => {
+            expect(body).toHaveProperty('id');
+            expect(isUUID(body.id)).toBeTruthy();
+            verifyTicketId = body.id;
+          })
+          .end((err, res) => {
+            done(err);
+          })
+        });
+      });
+  });
+  it('/tickets/:id (GET) get a ticket', () => {
+    const agent = request(app.getHttpServer());
+    return agent.get(`/tickets/${verifyTicketId}`)
+      .set('Authorization', attendeeIdToken)
+      .expect(200)
+      .expect(({ body }) => {
+        expect(body).toHaveProperty('entered', false);
+      });
+  });
+  it('/tickets (PATCH) verify a ticket', (done) => {
+    const agent = request(app.getHttpServer());
+    agent.patch('/tickets')
+      .send({
+        id: verifyTicketId
+      })
+      .set('Authorization', accessToken)
+      .expect(200)
+      .end((err, res) => {
+        if (err) {
+          return done(err)
+        }
+        agent.get(`/tickets/${verifyTicketId}`)
+          .set('Authorization', attendeeIdToken)
+          .expect(200)
+          .expect(({ body }) => {
+            expect(body).toHaveProperty('entered', true);
+          })
+          .end((err, res) => {
+            done(err)
+          })
+      })
   });
   // given refesh token with exist users
   it('/auth/refresh (POST)', () => {

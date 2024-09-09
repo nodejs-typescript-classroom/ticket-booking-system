@@ -1,4 +1,5 @@
-import { CreateEventDto, EventsResponse, PageInfoRequestDto } from './dto/event.dto';
+import { PageInfoRequestDto } from '../pagination.dto';
+import { CreateEventDto, EventsResponse } from './dto/event.dto';
 import { EventEntity } from './schema/event.entity';
 
 export abstract class EventsRepository {
