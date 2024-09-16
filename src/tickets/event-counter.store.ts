@@ -6,7 +6,8 @@ export class EventCounterStore implements EventCounterRespository {
   store: Map<string, EventCounterEntity> = new Map<string, EventCounterEntity>();
   async get(eventId: string): Promise<EventCounterEntity> {
     if (!this.store.has(eventId)) {
-      throw new NotFoundException('event id not initial or not existed');
+      throw new NotFoundException({
+        message: 'event id not initial or not existed', eventId });
     }
     return this.store.get(eventId);
   }

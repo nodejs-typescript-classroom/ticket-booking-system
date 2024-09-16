@@ -2,10 +2,11 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TicketsService } from './tickets.service';
 import { CreateTicketDto } from './dto/ticket.dto';
 import { isUUID } from 'class-validator';
-import { TicketsStore } from './tickets.store';
+import { TicketsStore } from '../../mocked/tickets.store';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { PageInfoRequestDto } from '../pagination.dto';
+import { TicketDbStore } from './ticket-db.store';
 
 const mockedEventEmitter = {
   emit: jest.fn().mockReturnValue({})
@@ -18,7 +19,10 @@ describe('TicketsService', () => {
   let eventId: string;
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [TicketsService, TicketsStore, {
+      providers: [TicketsService, {
+        provide: TicketDbStore,
+        useClass: TicketsStore,
+      }, {
         provide: EventEmitter2,
         useValue: mockedEventEmitter
       }],

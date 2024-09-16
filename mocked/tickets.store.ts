@@ -1,7 +1,7 @@
 import { PageInfoRequestDto } from 'src/pagination.dto';
-import { CreateTicketDto, TicketsCountResponseDto, TicketsResponse } from './dto/ticket.dto';
-import { TicketEntity } from './schema/ticket.entity';
-import { TicketsRepository } from './tickets.repository';
+import { CreateTicketDto, TicketsCountResponseDto, TicketsResponse } from '../src/tickets/dto/ticket.dto';
+import { TicketEntity } from '../src/tickets/schema/ticket.entity';
+import { TicketsRepository } from '../src/tickets/tickets.repository';
 import { Injectable, NotFoundException } from '@nestjs/common';
 @Injectable()
 export class TicketsStore implements TicketsRepository {

@@ -2,13 +2,18 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { EventsCounterService } from './events-counter.service';
 import { EventCounterStore } from './event-counter.store';
 import { BadRequestException } from '@nestjs/common';
+import { TicketDbStore } from './ticket-db.store';
+import { TicketsStore } from '../../mocked/tickets.store';
 
 describe('EventsCounterService', () => {
   let service: EventsCounterService;
   let eventId: string;
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [EventsCounterService, EventCounterStore],
+      providers: [EventsCounterService, EventCounterStore, {
+        provide: TicketDbStore,
+        useClass: TicketsStore
+      }],
     }).compile();
 
     service = module.get<EventsCounterService>(EventsCounterService);

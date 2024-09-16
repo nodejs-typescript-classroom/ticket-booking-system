@@ -2,14 +2,15 @@ import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { CreateTicketDto, GetTicketDto, GetTicketsDto, TicketCountDto, VerifyTicketDto } from './dto/ticket.dto';
 import { TicketsRepository } from './tickets.repository';
-import { TicketsStore } from './tickets.store';
+// import { TicketsStore } from './tickets.store';
 import { CreateTicketEvent, VerifyTicketEvent } from './dto/ticket.event';
 import { PageInfoRequestDto } from '../pagination.dto';
+import { TicketDbStore } from './ticket-db.store';
 
 @Injectable()
 export class TicketsService {
   constructor(private readonly eventEmitter: EventEmitter2, 
-    @Inject(TicketsStore)
+    @Inject(TicketDbStore)
     private readonly ticketRepo: TicketsRepository, 
   ) {}
   async createTicket(ticketInfo: CreateTicketDto) {

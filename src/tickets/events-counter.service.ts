@@ -4,10 +4,14 @@ import { EventCounterStore } from './event-counter.store';
 import { EventCounterRespository } from './event-counter.repository';
 import { OnEvent } from '@nestjs/event-emitter';
 import { CreateCounterEvent, CreateTicketEvent, VerifyTicketEvent } from './dto/ticket.event';
+import { TicketsRepository } from './tickets.repository';
+import { TicketDbStore } from './ticket-db.store';
 
 @Injectable()
 export class EventsCounterService {
   constructor(
+    @Inject(TicketDbStore)
+    private readonly ticketRepo: TicketsRepository,
     @Inject(EventCounterStore)
     private readonly eventCounterRepo: EventCounterRespository,
   ) {}
@@ -21,7 +25,9 @@ export class EventsCounterService {
       const currentResult = await this.eventCounterRepo.get(increaseTicketRequestDto.eventId);
       result = await this.eventCounterRepo.ticketIncr(increaseTicketRequestDto.eventId, increaseTicketRequestDto.ticketNumber, currentResult.attendeeNumber, currentResult.totalTicketNumber);
     } catch(error) {
-      result = await this.eventCounterRepo.ticketIncr(increaseTicketRequestDto.eventId, increaseTicketRequestDto.ticketNumber, 0, 0);
+      // fetch data from db
+      const count = await this.ticketRepo.getCounts({ eventId: increaseTicketRequestDto.eventId });
+      result = await this.eventCounterRepo.ticketIncr(increaseTicketRequestDto.eventId, increaseTicketRequestDto.ticketNumber, count.accumAttendee, count.accumTickets);
     }
     return result;
   }
