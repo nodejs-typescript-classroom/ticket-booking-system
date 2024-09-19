@@ -4,12 +4,14 @@ import * as request from 'supertest';
 import { AppModule } from './../src/app.module';
 import { isUUID } from 'class-validator';
 import { StartedPostgreSqlContainer } from '@testcontainers/postgresql';
+import { StartedRedisContainer } from '@testcontainers/redis';
 describe('AppController (e2e)', () => {
   let app: INestApplication;
   let userId: string;
   let refreshToken: string;
   let accessToken: string;
   let postgresql: StartedPostgreSqlContainer;
+  let redis: StartedRedisContainer;
   let eventId: string;
   let attendeeIdToken: string;
   let attendeeUserId: string;
@@ -17,6 +19,7 @@ describe('AppController (e2e)', () => {
   let verifyTicketId: string;
   beforeAll(async () => {
     postgresql = global.postgresql;
+    redis = global.redis;
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
@@ -31,6 +34,7 @@ describe('AppController (e2e)', () => {
   afterAll(async () => {
     await app.close();
     await postgresql.stop();
+    await redis.stop();
   })
 
   it('/ (GET)', () => {

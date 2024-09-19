@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { EventCounterRespository } from './event-counter.repository';
-import { EventCounterEntity } from './schema/event-counter.entity';
+import { EventCounterRespository } from '../src/tickets/event-counter.repository';
+import { EventCounterEntity } from '../src/tickets/schema/event-counter.entity';
 @Injectable()
 export class EventCounterStore implements EventCounterRespository {
   store: Map<string, EventCounterEntity> = new Map<string, EventCounterEntity>();

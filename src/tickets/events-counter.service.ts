@@ -1,18 +1,18 @@
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { IncreaseAttendeeDto, IncreaseTicketDto, InitialCounterDto } from './dto/ticket.dto';
-import { EventCounterStore } from './event-counter.store';
 import { EventCounterRespository } from './event-counter.repository';
 import { OnEvent } from '@nestjs/event-emitter';
 import { CreateCounterEvent, CreateTicketEvent, VerifyTicketEvent } from './dto/ticket.event';
 import { TicketsRepository } from './tickets.repository';
 import { TicketDbStore } from './ticket-db.store';
+import { EventCounterRedisStore } from './event-couter.redis.store';
 
 @Injectable()
 export class EventsCounterService {
   constructor(
     @Inject(TicketDbStore)
     private readonly ticketRepo: TicketsRepository,
-    @Inject(EventCounterStore)
+    @Inject(EventCounterRedisStore)
     private readonly eventCounterRepo: EventCounterRespository,
   ) {}
   async initCounter(initRequestDto: InitialCounterDto) {

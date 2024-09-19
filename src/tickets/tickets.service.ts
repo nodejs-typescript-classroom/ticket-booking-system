@@ -17,7 +17,7 @@ export class TicketsService {
     const result = await this.ticketRepo.save(ticketInfo);
     const createTicketEvent = new CreateTicketEvent();
     createTicketEvent.eventId = result.eventId;
-    createTicketEvent.ticketNumber = result.ticketNumber;
+    createTicketEvent.ticketNumber = parseInt(result.ticketNumber.toString());
     this.eventEmitter.emit('create-ticket-event', createTicketEvent);
     return {
       id: result.id

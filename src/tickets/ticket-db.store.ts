@@ -77,11 +77,11 @@ export class TicketDbStore implements TicketsRepository {
   async getCounts(criteria: Partial<TicketEntity>): Promise<TicketsCountResponseDto> {
     const queryManager = this.dataSource.manager;
     const [totalResult, attendeeResult] = await Promise.all([
-      queryManager.query<{total: number}>('SELECT COUNT(ticket_number) AS total FROM public.tickets where event_id=?', [criteria.eventId]),
-      queryManager.query<{total: number}>('SELECT COUNT(ticket_number) AS total FROM public.tickets where event_id=? and entered=false', [criteria.eventId]),
+      queryManager.query<{total: number}>('SELECT COUNT(ticket_number) AS total FROM public.tickets WHERE event_id=$1', [criteria.eventId]),
+      queryManager.query<{total: number}>('SELECT COUNT(ticket_number) AS total FROM public.tickets WHERE event_id=$1 and entered=false', [criteria.eventId]),
     ]);
-    const accumTickets = totalResult.total;
-    const accumAttendee = attendeeResult.total;
+    const accumTickets = parseInt(totalResult[0].total);
+    const accumAttendee = parseInt(attendeeResult[0].total);
     return {
       eventId: criteria.eventId,
       accumTickets: accumTickets,

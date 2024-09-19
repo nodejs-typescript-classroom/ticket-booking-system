@@ -1,4 +1,5 @@
 import { PostgreSqlContainer } from '@testcontainers/postgresql';
+import { RedisContainer } from '@testcontainers/redis';
 import { getDataSource } from '../data_source/test_container.source';
 export const initPostgresql = async() => {
   const postgresql = await new PostgreSqlContainer('postgres:14')
@@ -15,7 +16,17 @@ export const initPostgresql = async() => {
   const datasource = await getDataSource(DB_URI);
   await datasource.runMigrations();
 }
+const initRedis = async() => {
+  const redis = await new RedisContainer()
+  .withPassword('123456')
+  .withPrivilegedMode()
+  .start();
+  const REDIS_URL = redis.getConnectionUrl();
+  process.env.REDIS_URL = REDIS_URL;
+  global.redis = redis;
+}
 const init =  async () => {
   await initPostgresql();
+  await initRedis();
 }
 export default init;
