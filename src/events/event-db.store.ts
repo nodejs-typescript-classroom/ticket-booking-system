@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
 import { CreateEventDto, EventsResponse } from './dto/event.dto';
 import { EventsRepository } from './events.repository';
 import { EventEntity } from './schema/event.entity';
@@ -7,21 +7,33 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { PageInfoRequestDto } from '../pagination.dto';
 @Injectable()
 export class EventDbStore implements EventsRepository {
+  private logger: Logger = new Logger(EventDbStore.name);
   constructor(
     @InjectRepository(EventEntity)
     private readonly eventRepo: Repository<EventEntity>
   ) {}
   async save(eventInfo: CreateEventDto): Promise<EventEntity> {
-    const event = new EventEntity();
-    event.id = crypto.randomUUID();
-    event.name = eventInfo.name;
-    event.location = eventInfo.location;
-    event.startDate = eventInfo.startDate;
-    if (eventInfo.numberOfDays) {
-      event.numberOfDays = eventInfo.numberOfDays;
+    try {
+      const event = new EventEntity();
+      event.id = crypto.randomUUID();
+      event.name = eventInfo.name;
+      event.location = eventInfo.location;
+      event.startDate = eventInfo.startDate;
+      if (eventInfo.numberOfDays) {
+        event.numberOfDays = eventInfo.numberOfDays;
+      }
+      await this.eventRepo.save(event);
+      return event;
+    } catch (error) {
+      this.logger.error({ code: error?.code }, error.message);
+      if (error?.code == '23505') {
+        throw new ConflictException({
+          message: `event ${eventInfo.location} ${eventInfo.name} ${eventInfo.startDate}  existed`,
+          eventInfo
+        });
+      }
+      throw new InternalServerErrorException();
     }
-    await this.eventRepo.save(event);
-    return event;
   }
   async findOne(criteria: Partial<EventEntity>): Promise<EventEntity> {
     const event = await this.eventRepo.findOneBy(criteria);

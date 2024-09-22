@@ -9,9 +9,31 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { EventsModule } from './events/events.module';
 import { TicketsModule } from './tickets/tickets.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { LoggerModule } from 'nestjs-pino';
+import { Request } from 'express';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { LoggerInterceptor } from './logger.interceptor';
 
 @Module({
   imports: [
+    LoggerModule.forRootAsync({
+      useFactory: async () => {
+        return {
+          pinoHttp: {
+            autoLogging: false,
+            base: null,
+            quietReqLogger: true,
+            genReqId: (request: Request) => request.headers['x-correlation-id'] || crypto.randomUUID(),
+            level: 'info',
+            formatters: {
+              level (label)  {
+                return {level: label }
+              }
+            },
+          },
+        }
+      }
+    }),
     EventEmitterModule.forRoot(),
     ConfigModule.forRoot({
       isGlobal: true,
@@ -37,6 +59,9 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     }),
     UsersModule, AuthModule, EventsModule, TicketsModule],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, {
+    provide: APP_INTERCEPTOR,
+    useClass: LoggerInterceptor,
+  }],
 })
 export class AppModule {}

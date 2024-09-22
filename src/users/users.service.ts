@@ -1,4 +1,4 @@
-import { ConflictException, Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { ConflictException, Inject, Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
 import { UserRepository } from './users.repository';
@@ -6,6 +6,7 @@ import { UserEntity } from './schema/user.entity';
 import { UserDBStore } from './users-db.store';
 @Injectable()
 export class UsersService {
+  private logger: Logger = new Logger(UsersService.name);
   constructor(
     @Inject(UserDBStore)
     private readonly userRepo: UserRepository,
@@ -18,8 +19,8 @@ export class UsersService {
       })
       return {id: result.id }
     } catch (error) {
-      // TODO: add proper logger
-      console.error({ error: error.message, code: error?.code });
+      // add proper logger
+      this.logger.error({ code: error?.code }, error.message);
       if (error?.code == '23505') {
         throw new ConflictException(`email ${userInfo.email} existed`);
       }
