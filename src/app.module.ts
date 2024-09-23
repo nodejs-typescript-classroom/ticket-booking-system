@@ -9,7 +9,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { EventsModule } from './events/events.module';
 import { TicketsModule } from './tickets/tickets.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
-import { LoggerModule } from 'nestjs-pino';
+import { Logger, LoggerModule } from 'nestjs-pino';
 import { Request } from 'express';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { LoggerInterceptor } from './logger.interceptor';
@@ -40,8 +40,10 @@ import { LoggerInterceptor } from './logger.interceptor';
       validationSchema: validateSchema,
     }),
     TypeOrmModule.forRootAsync({
-      useFactory(configService: ConfigService) {
+      useFactory(configService: ConfigService, logger: Logger) {
         const IS_DB_SSL_MODE = configService.get<string>('NODE_ENV', 'dev') == 'production';
+        const MAX_RETRY_TIME = 5;
+        let count = 0;
         return {
           ssl: IS_DB_SSL_MODE,
           extra: {
@@ -53,9 +55,14 @@ import { LoggerInterceptor } from './logger.interceptor';
           url: configService.getOrThrow<string>('DB_URI', ''),
           synchronize: false,
           autoLoadEntities: true,
+          toRetry(err) {
+            logger.error({message: 'typeorm retry failed', retry_count: count+1}, err, 'Typeorm');
+            count++;
+            return count < MAX_RETRY_TIME;
+          },
         }
       },
-      inject:[ConfigService]
+      inject:[ConfigService, Logger]
     }),
     UsersModule, AuthModule, EventsModule, TicketsModule],
   controllers: [AppController],

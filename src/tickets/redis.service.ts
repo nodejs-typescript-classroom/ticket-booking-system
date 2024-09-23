@@ -84,6 +84,7 @@ export class RedisService implements OnModuleDestroy {
     });
   }
   onModuleDestroy() {
+    this.logger.warn({ message: 'redis disconnecting', url: this.connect_url});
     this.connection.disconnect(false);
   }
   private async checkLuaScript(sha: string) {
