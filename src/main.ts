@@ -43,7 +43,7 @@ const gracefulShutdown = (signal?: unknown) => {
     .catch((err: unknown) => pinoLogger.error('server shutdown failed', err));
   }
   setTimeout(() => {
-    pinoLogger.error('force to shutdown after 3 seconds');
+    pinoLogger.error('force to shutdown after 3 seconds', signal);
     process.exit(1);
   }, 3000);
 }

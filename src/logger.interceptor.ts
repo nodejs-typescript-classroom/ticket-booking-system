@@ -19,7 +19,7 @@ export class LoggerInterceptor implements NestInterceptor {
         this.logger.log({
           method, url, statusCode, contentLength, userAgent, 
           requestInMillis: Date.now() - now,
-          res
+          type: 'Response'
         });
       }),
       catchError((error: unknown) => {
@@ -29,7 +29,8 @@ export class LoggerInterceptor implements NestInterceptor {
         this.logger.error({
           method, url, statusCode, userAgent, ip, class: context.getClass().name, 
           handler: context.getHandler().name,
-          requestInMillis: Date.now() - now 
+          requestInMillis: Date.now() - now,
+          type: 'Response'
         });
         return throwError(() => error);
       })

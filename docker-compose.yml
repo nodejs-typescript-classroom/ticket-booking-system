@@ -18,6 +18,8 @@ services:
       options:
         max-size: 1k
         max-file: 3
+    networks:
+      - ticket
   redis:
     container_name: ticket-redis
     build: 
@@ -39,3 +41,37 @@ services:
       options:
         max-size: 1k
         max-file: 3
+    networks:
+      - ticket
+  ticket-mn-api:
+    container_name: ticket-mn-api
+    build: 
+      context: .
+      dockerfile: ./Dockerfile
+      target: prod
+    image: ticket-mn-api
+    ports:
+      - 3000:3000
+    environment:
+      - JWT_ACCESS_TOKEN_SECRET=${JWT_ACCESS_TOKEN_SECRET}
+      - JWT_ACCESS_TOKEN_EXPIRATION_MS=${JWT_ACCESS_TOKEN_EXPIRATION_MS}
+      - JWT_REFRESH_TOKEN_SECRET=${JWT_REFRESH_TOKEN_SECRET}
+      - JWT_REFRESH_TOKEN_EXPIRATION_MS=${JWT_REFRESH_TOKEN_EXPIRATION_MS}
+      - DB_URI=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWD}@db:5432/ticket-system-db
+      - NODE_ENV=dev
+      - REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379
+    networks:
+      - ticket
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    logging:
+      driver: json-file
+      options:
+        max-size: 1k
+        max-file: 3
+networks:
+  ticket:
+   name: ticket

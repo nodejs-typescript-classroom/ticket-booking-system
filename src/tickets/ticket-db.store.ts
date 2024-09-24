@@ -1,4 +1,4 @@
-import { PageInfoRequestDto } from 'src/pagination.dto';
+import { PageInfoRequestDto } from '../pagination.dto';
 import { CreateTicketDto, TicketsResponse, TicketsCountResponseDto } from './dto/ticket.dto';
 import { TicketEntity } from './schema/ticket.entity';
 import { TicketsRepository } from './tickets.repository';
