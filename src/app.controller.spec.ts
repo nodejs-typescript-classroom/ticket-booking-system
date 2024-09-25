@@ -16,7 +16,7 @@ describe('AppController', () => {
 
   describe('getAppName', () => {
     it('should return "ticket-booking-system"', () => {
-      expect(appController.appName()).toBe('ticket-booking-system');
+      expect(appController.appName()).toHaveProperty('name', 'ticket-booking-system');
     });
   });
 });
