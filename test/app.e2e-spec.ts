@@ -41,7 +41,7 @@ describe('AppController (e2e)', () => {
     return request(app.getHttpServer())
       .get('/')
       .expect(200)
-      .expect('ticket-booking-system');
+      .expect({name: 'ticket-booking-system'});
   });
   it('/auth/register (POST) with failed', () => {
     return request(app.getHttpServer())
