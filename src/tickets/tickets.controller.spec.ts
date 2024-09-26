@@ -3,6 +3,7 @@ import { TicketsController } from './tickets.controller';
 import { CreateTicketDto, GetTicketsDto, VerifyTicketDto } from './dto/ticket.dto';
 import { TicketsService } from './tickets.service';
 import { PageInfoRequestDto } from '../pagination.dto';
+import { UserEntity } from '../users/schema/user.entity';
 
 describe('TicketsController', () => {
   const mockTicketService = {
@@ -51,9 +52,11 @@ describe('TicketsController', () => {
    */
   it('service.getTicket should be called once', async () => {
     const id = crypto.randomUUID();
-    await controller.getTicket(id);
+    const user = new UserEntity();
+    user.id = crypto.randomUUID();
+    await controller.getTicket(id, user);
     expect(service.getTicket).toHaveBeenCalledTimes(1);
-    expect(service.getTicket).toHaveBeenCalledWith({ id });
+    expect(service.getTicket).toHaveBeenCalledWith({ id }, user.id);
   });
   /**
   givne a exist user id

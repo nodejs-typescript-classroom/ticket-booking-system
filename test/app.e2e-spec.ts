@@ -277,7 +277,7 @@ describe('AppController (e2e)', () => {
       .set('Authorization', attendeeIdToken)
       .expect(200)
       .expect(({ body }) => {
-        expect(body).toHaveProperty('entered', false);
+        expect(body.ticket).toHaveProperty('entered', false);
       });
   });
   it('/tickets (PATCH) verify a ticket', (done) => {
@@ -296,7 +296,7 @@ describe('AppController (e2e)', () => {
           .set('Authorization', attendeeIdToken)
           .expect(200)
           .expect(({ body }) => {
-            expect(body).toHaveProperty('entered', true);
+            expect(body.ticket).toHaveProperty('entered', true);
           })
           .end((err, res) => {
             done(err)

@@ -15,7 +15,7 @@ export class PermissionGuard implements CanActivate {
     const req = request as Request;
     let isOwner: boolean = false;
     if (req.params.id) {
-      const ticket = await this.ticketsService.getTicket({id: req.params.id});
+      const { ticket } = await this.ticketsService.getTicket({id: req.params.id}, user.id);
       isOwner = ticket.userId == user.id;
     }
     if (req.query.userId) {

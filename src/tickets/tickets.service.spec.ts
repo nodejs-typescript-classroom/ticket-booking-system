@@ -64,16 +64,16 @@ describe('TicketsService', () => {
   given existed id
    */
   it('should return ticketInfo with specific ticketid', async () => {
-    const result = await service.getTicket({id: ticketId });
-    expect(result).toHaveProperty('userId', userId);
-    expect(result).toHaveProperty('eventId', eventId);
-    expect(result).toHaveProperty('ticketNumber', 1);
+    const { ticket } = await service.getTicket({id: ticketId }, userId);
+    expect(ticket).toHaveProperty('userId', userId);
+    expect(ticket).toHaveProperty('eventId', eventId);
+    expect(ticket).toHaveProperty('ticketNumber', 1);
   });
   /**
   given not existed id
    */
   it('should reject with NotFound Exception', async () => {
-    await expect(service.getTicket({ id: crypto.randomUUID()})).rejects.toThrow(NotFoundException);
+    await expect(service.getTicket({ id: crypto.randomUUID()}, userId)).rejects.toThrow(NotFoundException);
   })
   /**
   given exist event id

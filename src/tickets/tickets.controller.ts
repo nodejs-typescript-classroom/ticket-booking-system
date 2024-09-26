@@ -6,6 +6,8 @@ import { PageInfoRequestDto } from '../pagination.dto';
 import { PermissionGuard } from './guards/permission.guard';
 import { RolesGuard } from '../auth/guards/role.guard';
 import { Roles } from '../auth/roles.decorator';
+import { CurrentUser } from '../auth/current-user.decorator';
+import { UserEntity } from '../users/schema/user.entity';
 
 @Controller('tickets')
 export class TicketsController {
@@ -19,8 +21,8 @@ export class TicketsController {
   }
   @Get(':id')
   @UseGuards(JwtAuthGuard, PermissionGuard)
-  async getTicket(@Param('id', ParseUUIDPipe) id: string) {
-    return this.ticketsService.getTicket({ id: id });
+  async getTicket(@Param('id', ParseUUIDPipe) id: string, @CurrentUser() user: UserEntity) {
+    return this.ticketsService.getTicket({ id: id }, user.id);
   }
   @Get()
   @UseGuards(JwtAuthGuard, PermissionGuard)

@@ -2,10 +2,10 @@ import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { CreateTicketDto, GetTicketDto, GetTicketsDto, TicketCountDto, VerifyTicketDto } from './dto/ticket.dto';
 import { TicketsRepository } from './tickets.repository';
-// import { TicketsStore } from './tickets.store';
 import { CreateTicketEvent, VerifyTicketEvent } from './dto/ticket.event';
 import { PageInfoRequestDto } from '../pagination.dto';
 import { TicketDbStore } from './ticket-db.store';
+import * as QrCode from 'qrcode';
 
 @Injectable()
 export class TicketsService {
@@ -23,8 +23,23 @@ export class TicketsService {
       id: result.id
     }
   }
-  async getTicket(ticketInfo: GetTicketDto) {
-    return await this.ticketRepo.findOne(ticketInfo);
+  async getTicket(ticketInfo: GetTicketDto, userId: string) {
+    const ticket =  await this.ticketRepo.findOne(ticketInfo);
+    const jsonString = JSON.stringify({ ticket_id: ticket.id, user_id: userId});
+    const promiseQrCode = new Promise<string>((resolve, reject) => {
+      QrCode.toBuffer(jsonString, (err, result) => {
+        if (err) {
+          reject(err);
+          return;
+        }
+        resolve(result.toString('base64'));
+      });
+    });
+    const qrcode = await promiseQrCode;
+    return {
+      ticket,
+      qrcode
+    }
   }
   async getTickets(ticketsInfo: GetTicketsDto, pageInfo: PageInfoRequestDto) {
     return await this.ticketRepo.find(ticketsInfo, pageInfo);
