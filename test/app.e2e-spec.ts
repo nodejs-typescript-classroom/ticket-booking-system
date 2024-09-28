@@ -62,9 +62,9 @@ describe('AppController (e2e)', () => {
       })
       .expect(201)
       .expect(({ body }) => {
-        userId = body.id;
-        attendeeUserId = body.id;
-        expect(isUUID(body.id)).toBeTruthy()
+        userId = body.data.id;
+        attendeeUserId = body.data.id;
+        expect(isUUID(body.data.id)).toBeTruthy()
       });
   });
   // given login with correct credential
@@ -78,10 +78,10 @@ describe('AppController (e2e)', () => {
       })
       .expect(201)
       .expect(({body}) => {
-        refreshToken = body.refresh_token;
-        accessToken = body.access_token;
-        expect(body).toHaveProperty('access_token');
-        expect(body).toHaveProperty('refresh_token');
+        refreshToken = body.data.refresh_token;
+        accessToken = body.data.access_token;
+        expect(body.data).toHaveProperty('access_token');
+        expect(body.data).toHaveProperty('refresh_token');
       });
   })
   it('/users/:userId (GET)', () => {
@@ -245,8 +245,8 @@ describe('AppController (e2e)', () => {
         })
         .expect(201)
         .expect(({ body }) => {
-          expect(body).toHaveProperty('access_token');
-          attendeeIdToken = body.access_token;
+          expect(body.data).toHaveProperty('access_token');
+          attendeeIdToken = body.data.access_token;
         })
         .end((err, res) => {
           if (err) {

@@ -6,6 +6,8 @@ import { TokenPayload } from './token-payload.interface';
 import { JwtService } from '@nestjs/jwt';
 import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcrypt';
+import { convertEntityToDto } from '../users/dto/get-user.dto';
+import { ApiResponse } from '../api-response.dto';
 @Injectable()
 export class AuthService {
   constructor(
@@ -13,7 +15,7 @@ export class AuthService {
     private readonly jwtService: JwtService,
     private readonly userService: UsersService,
   ) {}
-  async login(user: UserEntity): Promise<LoginResponseDto> {
+  async login(user: UserEntity): Promise<ApiResponse<LoginResponseDto>> {
     const expiresAccessToken = new Date();
     expiresAccessToken.setTime(
       expiresAccessToken.getTime() + this.configService.get<number>('JWT_ACCESS_TOKEN_EXPIRATION_MS')
@@ -38,8 +40,12 @@ export class AuthService {
       await bcrypt.hash(refreshToken, 10),
     })
     return {
-      refresh_token: refreshToken,
-      access_token: accessToken,
+      message: 'login success',
+      data: {
+        refresh_token: refreshToken,
+        access_token: accessToken,
+        user: convertEntityToDto(user)
+      }
     }
   }
   async verifyUser(email: string, password: string): Promise<UserEntity> {

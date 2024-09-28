@@ -54,12 +54,12 @@ describe('AuthService', () => {
       email: user.email,
       password: '@1#$aB%22^'
     });
-    user.id = receiveObj.id;
+    user.id = receiveObj.data.id;
     const result = await service.login(user);
-    expect(result).toHaveProperty('access_token');
-    expect(result).toHaveProperty('refresh_token');
-    expect(isJWT(result.access_token)).toBeTruthy();
-    expect(isJWT(result.refresh_token)).toBeTruthy();
+    expect(result.data).toHaveProperty('access_token');
+    expect(result.data).toHaveProperty('refresh_token');
+    expect(isJWT(result.data.access_token)).toBeTruthy();
+    expect(isJWT(result.data.refresh_token)).toBeTruthy();
   });
   // given with not existed user
   it('should be rejected with not found error ', async () => {
@@ -97,9 +97,9 @@ describe('AuthService', () => {
       email: email,
       password: password
     });
-    const user = await userService.findUser({ id: object.id });
+    const user = await userService.findUser({ id: object.data.id });
     const loginResult = await service.login(user);
-    const result = await service.refreshToken(loginResult.refresh_token, object.id);
+    const result = await service.refreshToken(loginResult.data.refresh_token, object.data.id);
     expect(result.email).toEqual(email);
   })
   // given a exist refreshToken, and userId, but wrong refresh token
@@ -110,8 +110,8 @@ describe('AuthService', () => {
       email: email,
       password: password
     });
-    const user = await userService.findUser({ id: object.id });
+    const user = await userService.findUser({ id: object.data.id });
     const loginResult = await service.login(user);
-    await expect(service.refreshToken(loginResult.refresh_token.replace('1','2'), user.id)).rejects.toThrow(UnauthorizedException);
+    await expect(service.refreshToken(loginResult.data.refresh_token.replace('1','2'), user.id)).rejects.toThrow(UnauthorizedException);
   })
 });

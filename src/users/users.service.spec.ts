@@ -37,9 +37,9 @@ describe('UsersService', () => {
       password: 'password',
     }
     const result = await service.createUser(userInfo);
-    userId = result.id;
-    expect(result).toHaveProperty('id');
-    expect(isUUID(result['id'], 4)).toBeTruthy();
+    userId = result.data.id;
+    expect(result.data).toHaveProperty('id');
+    expect(isUUID(result.data['id'], 4)).toBeTruthy();
   });
   it('should return result with given criteria', async () => {
     const userInfo = {
