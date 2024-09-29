@@ -18,7 +18,7 @@ describe('EventsController', () => {
   afterEach(() => {
     jest.clearAllMocks();
   })
-  beforeEach(async () => {
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       controllers: [EventsController],
       providers: [{

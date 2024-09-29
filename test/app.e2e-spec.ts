@@ -136,8 +136,8 @@ describe('AppController (e2e)', () => {
       .set('Authorization', accessToken)
       .expect(201)
       .expect(({ body }) => {
-        expect(isUUID(body.id)).toBeTruthy();
-        eventId = body.id;
+        expect(isUUID(body.data.id)).toBeTruthy();
+        eventId = body.data.id;
       });
   });
   // given exist eventid with existed event
@@ -147,8 +147,8 @@ describe('AppController (e2e)', () => {
       .set('Authorization', accessToken)
       .expect(200)
       .expect(({ body }) => {
-        expect(body).toHaveProperty('name', '江惠演唱會');
-        expect(body).toHaveProperty('location', '台北大巨蛋')
+        expect(body.data).toHaveProperty('name', '江惠演唱會');
+        expect(body.data).toHaveProperty('location', '台北大巨蛋')
       });
   });
   // given exist location with existed event
@@ -161,8 +161,8 @@ describe('AppController (e2e)', () => {
       .set('Authorization', accessToken)
       .expect(200)
       .expect(({ body }) => {
-        expect(body).toHaveProperty('events');
-        expect(body.events.length).toEqual(1);
+        expect(body.data).toHaveProperty('events');
+        expect(body.data.events.length).toEqual(1);
       });
   });
   // given exist eventid with existed event
@@ -175,8 +175,8 @@ describe('AppController (e2e)', () => {
       })
       .expect(200)
       .expect(({ body }) => {
-        expect(body).toHaveProperty('name', '江惠演唱會');
-        expect(body).toHaveProperty('location', '台北小巨蛋')
+        expect(body.data).toHaveProperty('name', '江惠演唱會');
+        expect(body.data).toHaveProperty('location', '台北小巨蛋')
       });
   });
   // given wrong token with get event
@@ -203,8 +203,8 @@ describe('AppController (e2e)', () => {
       .set('Authorization', accessToken)
       .expect(200)
       .expect(({ body }) => {
-        expect(body).toHaveProperty('id')
-        expect(isUUID(body.id)).toBeTruthy();
+        expect(body.data).toHaveProperty('id')
+        expect(isUUID(body.data.id)).toBeTruthy();
       })
       .end((err, res) => {
         if (err) {
@@ -229,9 +229,9 @@ describe('AppController (e2e)', () => {
       .set('Authorization', accessToken)
       .expect(201)
       .expect(({ body }) => {
-        expect(body).toHaveProperty('id');
-        expect(isUUID(body.id)).toBeTruthy();
-        attendEventId = body.id;
+        expect(body.data).toHaveProperty('id');
+        expect(isUUID(body.data.id)).toBeTruthy();
+        attendEventId = body.data.id;
       })
       .end((err, res) => {
         if (err) {

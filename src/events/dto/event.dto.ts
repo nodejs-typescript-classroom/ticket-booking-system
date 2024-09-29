@@ -1,6 +1,6 @@
 import { BadRequestException } from '@nestjs/common';
 import { Transform, Type } from 'class-transformer';
-import { isISO8601, IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
+import { IsDate, isISO8601, IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { EventEntity } from '../schema/event.entity';
 import { Pagination } from '../../pagination.dto';
 
@@ -78,3 +78,33 @@ export class EventsResponse {
   @Type(() => Pagination)
   pageInfo: Pagination;
 } 
+export class EventsResponseDto {
+  @ValidateNested({ each: true})
+  @Type(() => EventResponse)
+  events: EventResponse[];
+  @ValidateNested()
+  @Type(() => Pagination)
+  pageInfo: Pagination;
+}
+export class EventResponse {
+  @IsUUID()
+  id: string;
+  @IsNotEmpty()
+  @IsString()
+  name: string;
+  @IsNotEmpty()
+  @IsString()
+  location: string;
+  @IsDate()
+  startDate: Date;
+  @IsNumber()
+  numberOfDays: number;
+  @IsDate()
+  createdAt: Date;
+  @IsDate()
+  updatedAt: Date;
+  @IsNumber()
+  totalTicketsPurchased: number = 0;
+  @IsNumber()
+  totalTicketsEntered: number = 0;
+}

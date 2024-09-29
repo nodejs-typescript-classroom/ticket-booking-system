@@ -37,9 +37,6 @@ export class EventsController {
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(['admin'])
   async deleteEvent(@Param('id', ParseUUIDPipe) eventId) {
-    const deleteId = await this.eventService.deleteEvent(eventId);
-    return {
-      id: deleteId,
-    }
+    return this.eventService.deleteEvent(eventId);
   }
 }

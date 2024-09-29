@@ -7,6 +7,8 @@ import { NotFoundException } from '@nestjs/common';
 import { EventDbStore } from './event-db.store';
 import { PageInfoRequestDto } from '../pagination.dto';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { EventCounterRedisStore } from '../tickets/event-couter.redis.store';
+import { EventCounterStore } from '../../mocked/event-counter.store';
 const mockedEventEmitter = {
   emit: jest.fn().mockReturnValue({})
 }
@@ -14,6 +16,7 @@ describe('EventsService', () => {
   let service: EventsService;
   let eventId: string;
   let eventEmitter: EventEmitter2;
+  let eventCounterStore: EventCounterRedisStore;
   beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [EventsService, {
@@ -22,11 +25,14 @@ describe('EventsService', () => {
       }, {
         provide: EventEmitter2,
         useValue: mockedEventEmitter,
-      }],
-    }).compile();
-
+      }, {
+        provide: EventCounterRedisStore,
+        useClass: EventCounterStore,
+      }
+    ]}).compile();
     service = module.get<EventsService>(EventsService);
     eventEmitter = module.get<EventEmitter2>(EventEmitter2);
+    eventCounterStore = module.get<EventCounterRedisStore>(EventCounterRedisStore);
   });
 
   it('should be defined', () => {
@@ -52,11 +58,12 @@ describe('EventsService', () => {
     const startDate = new Date(Date.now() + 86400);
     createEventDto.startDate = startDate;
     const result = await service.createEvent(createEventDto);
-    expect(result).toHaveProperty('id');
-    expect(isUUID(result.id)).toBeTruthy();
+    expect(result.data).toHaveProperty('id');
+    expect(isUUID(result.data.id)).toBeTruthy();
     expect(eventEmitter.emit).toHaveBeenCalledTimes(1);
-    expect(eventEmitter.emit).toHaveBeenCalledWith("create-counter-event",{ eventId: result.id });
-    eventId = result.id;
+    expect(eventEmitter.emit).toHaveBeenCalledWith("create-counter-event",{ eventId: result.data.id });
+    eventId = result.data.id;
+    eventCounterStore.ticketIncr(eventId, 0, 0, 0);
   });
   it('should return result event with given event id', async () => {
     const eventInfo = {
@@ -65,8 +72,10 @@ describe('EventsService', () => {
     const expectName = '江蕙演唱會';
     const expectLocation = '台北大巨蛋';
     const result = await service.getEvent(eventInfo);
-    expect(result).toHaveProperty('name', expectName);
-    expect(result).toHaveProperty('location', expectLocation);
+    expect(result.data).toHaveProperty('name', expectName);
+    expect(result.data).toHaveProperty('location', expectLocation);
+    expect(result.data).toHaveProperty('totalTicketsPurchased', 0);
+    expect(result.data).toHaveProperty('totalTicketsEntered', 0);
   });
   /**
   given a valid create event dto
@@ -82,15 +91,16 @@ describe('EventsService', () => {
     createEventDto.location = '台北大巨蛋';
     const startDate = new Date(Date.now() + 86400);
     createEventDto.startDate = startDate;
-    await service.createEvent(createEventDto);
+    const sample = await service.createEvent(createEventDto);
     const criteria = new GetEventsDto();
     criteria.location = '台北大巨蛋';
     criteria.startDate = new Date();
     const pageInfo = new PageInfoRequestDto();
+    eventCounterStore.ticketIncr(sample.data.id, 0, 0, 0);
     const result = await service.getEvents(criteria, pageInfo);
-    expect(result).toHaveProperty('pageInfo');
-    expect(result).toHaveProperty('events');
-    expect((result.events).length).toEqual(2);
+    expect(result.data).toHaveProperty('pageInfo');
+    expect(result.data).toHaveProperty('events');
+    expect((result.data.events).length).toEqual(2);
   });
   /**
   given a update a event dto and event id
@@ -106,14 +116,14 @@ describe('EventsService', () => {
     };
     await service.updateEvent(eventId, updateData);
     const result = await service.getEvent({id: eventId});
-    expect(result.location).toEqual(updateData.location);    
+    expect(result.data.location).toEqual(updateData.location);    
   });
   /**
   given a existed event id
    */
   it('should return deleted event id', async () => {
     const result = await service.deleteEvent(eventId);
-    expect(isUUID(result)).toBeTruthy();
-    await expect(service.getEvent({id: result})).rejects.toThrow(NotFoundException)
+    expect(isUUID(result.data.id)).toBeTruthy();
+    await expect(service.getEvent({id: result.data.id})).rejects.toThrow(NotFoundException)
   })
 });

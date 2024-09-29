@@ -82,7 +82,14 @@ export class EventDbStore implements EventsRepository {
     const queryBuilder = this.eventRepo.createQueryBuilder('events');
     const result = await queryBuilder.update<EventEntity>(EventEntity, data)
     .where(criteria).returning(['id', 'name', 'location', 'startDate', 'numberOfDays', 'createdAt', 'updatedAt']).updateEntity(true).execute();
-    const model: EventEntity = result.raw[0] as EventEntity;
+    const model: EventEntity = new EventEntity();
+    model.id = result.raw[0].id;
+    model.name = result.raw[0].name;
+    model.location = result.raw[0].location;
+    model.numberOfDays = result.raw[0]['number_of_days'];
+    model.startDate = result.raw[0].start_date;
+    model.createdAt = result.raw[0].created_at;
+    model.updatedAt = result.raw[0].updated_at;
     return model;
   }
   async delete(criteria: Partial<EventEntity>): Promise<string> {
