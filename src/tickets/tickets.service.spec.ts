@@ -51,11 +51,11 @@ describe('TicketsService', () => {
     createTicketInfo.eventId = crypto.randomUUID();
     createTicketInfo.ticketNumber = 1;
     const result = await service.createTicket(createTicketInfo);
-    expect(result).toHaveProperty('id');
-    ticketId = result.id;
+    expect(result.data).toHaveProperty('id');
+    ticketId = result.data.id;
     userId = createTicketInfo.userId;
     eventId = createTicketInfo.eventId;
-    expect(isUUID(result.id)).toBeTruthy();
+    expect(isUUID(result.data.id)).toBeTruthy();
     expect(emitter.emit).toHaveBeenCalledTimes(1);
     expect(emitter.emit).toHaveBeenCalledWith('create-ticket-event', 
       { eventId: createTicketInfo.eventId, ticketNumber: createTicketInfo.ticketNumber});
@@ -64,10 +64,10 @@ describe('TicketsService', () => {
   given existed id
    */
   it('should return ticketInfo with specific ticketid', async () => {
-    const { ticket } = await service.getTicket({id: ticketId }, userId);
-    expect(ticket).toHaveProperty('userId', userId);
-    expect(ticket).toHaveProperty('eventId', eventId);
-    expect(ticket).toHaveProperty('ticketNumber', 1);
+    const result = await service.getTicket({id: ticketId }, userId);
+    expect(result.data.ticket).toHaveProperty('userId', userId);
+    expect(result.data.ticket).toHaveProperty('eventId', eventId);
+    expect(result.data.ticket).toHaveProperty('ticketNumber', 1);
   });
   /**
   given not existed id
@@ -81,16 +81,16 @@ describe('TicketsService', () => {
   it('should return response data with specific event id', async () => {
     const pageInfo = new PageInfoRequestDto();
     const result = await service.getTickets({ eventId: eventId }, pageInfo);
-    expect(result).toHaveProperty('tickets');
-    expect(result).toHaveProperty('pageInfo');
-    expect(result.pageInfo).toHaveProperty('total', 1);
+    expect(result.data).toHaveProperty('tickets');
+    expect(result.data).toHaveProperty('pageInfo');
+    expect(result.data.pageInfo).toHaveProperty('total', 1);
   });
   /**
   given exist not verified ticket id
    */
   it('should return verified uuid ticket and generate verify ticket event', async () => {
     const result = await service.verifyTicket({ id: ticketId });
-    expect(result).toHaveProperty('id', ticketId);
+    expect(result.data.ticket).toHaveProperty('id', ticketId);
     expect(emitter.emit).toHaveBeenCalledTimes(1)
     expect(emitter.emit).toHaveBeenCalledWith('verify-ticket-event', {
       eventId: eventId,

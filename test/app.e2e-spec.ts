@@ -261,9 +261,9 @@ describe('AppController (e2e)', () => {
           .set('Authorization', attendeeIdToken)
           .expect(201)
           .expect(({ body }) => {
-            expect(body).toHaveProperty('id');
-            expect(isUUID(body.id)).toBeTruthy();
-            verifyTicketId = body.id;
+            expect(body.data).toHaveProperty('id');
+            expect(isUUID(body.data.id)).toBeTruthy();
+            verifyTicketId = body.data.id;
           })
           .end((err, res) => {
             done(err);
@@ -277,7 +277,7 @@ describe('AppController (e2e)', () => {
       .set('Authorization', attendeeIdToken)
       .expect(200)
       .expect(({ body }) => {
-        expect(body.ticket).toHaveProperty('entered', false);
+        expect(body.data.ticket).toHaveProperty('entered', false);
       });
   });
   it('/tickets (PATCH) verify a ticket', (done) => {
@@ -296,7 +296,7 @@ describe('AppController (e2e)', () => {
           .set('Authorization', attendeeIdToken)
           .expect(200)
           .expect(({ body }) => {
-            expect(body.ticket).toHaveProperty('entered', true);
+            expect(body.data.ticket).toHaveProperty('entered', true);
           })
           .end((err, res) => {
             done(err)

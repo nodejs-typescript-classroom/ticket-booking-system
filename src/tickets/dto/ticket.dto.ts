@@ -1,6 +1,6 @@
 import { BadRequestException } from '@nestjs/common';
 import { Transform, Type } from 'class-transformer';
-import { IsNotEmpty, IsNumber, IsOptional, IsPositive, IsUUID, ValidateNested } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsPositive, IsString, IsUUID, ValidateNested } from 'class-validator';
 import { TicketEntity } from '../schema/ticket.entity';
 import { Pagination } from '../../pagination.dto';
 
@@ -51,6 +51,18 @@ export class VerifyTicketDto {
   @IsUUID()
   @IsNotEmpty()
   id: string;
+}
+export class TicketResponse {
+  @ValidateNested()
+  @Type(() => TicketEntity)
+  ticket: TicketEntity;
+  @IsString()
+  qrcode?: string;
+}
+export class VerifyResponse {
+  @ValidateNested()
+  @Type(() => TicketEntity)
+  ticket: TicketEntity;
 }
 export class TicketsResponse {
   @ValidateNested({ each: true})
