@@ -25,14 +25,20 @@ export class TicketDbStore implements TicketsRepository {
     return ticket;
   }
   async findOne(criteria: Partial<TicketEntity>): Promise<TicketEntity> {
-    const ticket = await this.ticketRepo.findOneBy(criteria);
+    const ticket = await this.ticketRepo.findOne({
+      where: {...criteria},
+      relations: {
+        event: true,
+      }
+    });
     if (!ticket) {
       throw new NotFoundException('ticket not found');
     }
     return ticket;
   }
   async find(criteria: Partial<TicketEntity>, pageInfo: PageInfoRequestDto): Promise<TicketsResponse> {
-    let queryBuilder = this.ticketRepo.createQueryBuilder('tickets');
+    let queryBuilder = this.ticketRepo.createQueryBuilder('tickets')
+    .leftJoinAndSelect('tickets.event', 'event');
     const offset = pageInfo.offset;
     const limit = pageInfo.limit;
     let whereCount = 0;

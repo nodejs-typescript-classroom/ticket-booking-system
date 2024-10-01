@@ -1,5 +1,6 @@
 import { IsDate, IsNotEmpty, IsNumber, IsString, IsUUID } from 'class-validator';
-import { Column, CreateDateColumn, Entity, PrimaryColumn, Unique, UpdateDateColumn } from 'typeorm';
+import { TicketEntity } from '../../tickets/schema/ticket.entity';
+import { Column, CreateDateColumn, Entity, OneToMany, PrimaryColumn, Unique, UpdateDateColumn } from 'typeorm';
 
 @Unique('unique_event_condition', ['name', 'location', 'startDate'])
 @Entity('events', { schema: 'public' })
@@ -59,4 +60,6 @@ export class EventEntity {
   })
   @IsDate()
   updatedAt: Date;
+  @OneToMany(() => TicketEntity, (ticket)=> ticket.event)
+  tickets: TicketEntity[];
 }

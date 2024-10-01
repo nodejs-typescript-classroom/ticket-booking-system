@@ -1,5 +1,6 @@
 import { IsBoolean, IsDate, IsNumber, IsOptional, IsPositive, IsUUID } from 'class-validator';
-import { Column, CreateDateColumn, Entity, PrimaryColumn, UpdateDateColumn } from 'typeorm';
+import { EventEntity } from '../../events/schema/event.entity';
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryColumn, UpdateDateColumn } from 'typeorm';
 
 @Entity('tickets', { schema: 'public' })
 export class TicketEntity {
@@ -58,4 +59,7 @@ export class TicketEntity {
   })
   @IsDate()
   updatedAt: Date;
+  @ManyToOne(() => EventEntity, (event) => event.tickets)
+  @JoinColumn({ name:'event_id', referencedColumnName: 'id'})
+  event: EventEntity;
 }
