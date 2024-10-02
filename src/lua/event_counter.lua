@@ -37,8 +37,7 @@ if request_total > 0 and request_join == 0 then
   total = total + request_total 
 end
 -- increase join, decrease total
-if request_join > 0 and total >= request_join then
-  total = total - request_join
+if request_join > 0 and total >= join + request_join then
   join = join + request_join
 end
 redis.call("SET", total_key, total)
