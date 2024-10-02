@@ -33,7 +33,7 @@ export class EventsCounterService {
   }
   async increaseAttendeeCount(increaseAttendeeRequestDto: IncreaseAttendeeDto) {
     const currentResult = await this.eventCounterRepo.get(increaseAttendeeRequestDto.eventId);
-    if (currentResult.totalTicketNumber < currentResult.attendeeNumber + increaseAttendeeRequestDto.ticketNumber) {
+    if (currentResult.totalTicketNumber < increaseAttendeeRequestDto.ticketNumber) {
       throw new BadRequestException(`increase attendee number should not large than total ticket number`);
     }
     const result = await this.eventCounterRepo.verifyIncr(increaseAttendeeRequestDto.eventId, increaseAttendeeRequestDto.ticketNumber, currentResult.attendeeNumber, currentResult.totalTicketNumber);

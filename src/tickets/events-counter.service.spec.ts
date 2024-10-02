@@ -55,7 +55,7 @@ describe('EventsCounterService', () => {
   increase over total ticket number
    */
   it('should return increase the attendee number', async () => {
-    await expect(service.increaseAttendeeCount({ eventId: eventId, ticketNumber: 1})).rejects
+    await expect(service.increaseAttendeeCount({ eventId: eventId, ticketNumber: 2})).rejects
      .toThrow(BadRequestException);
   });
 });
