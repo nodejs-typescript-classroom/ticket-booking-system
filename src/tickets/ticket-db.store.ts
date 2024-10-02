@@ -56,6 +56,7 @@ export class TicketDbStore implements TicketsRepository {
     }
     queryBuilder = queryBuilder.offset(offset);
     queryBuilder = queryBuilder.limit(limit);
+    queryBuilder = queryBuilder.orderBy('event.startDate', 'ASC');
     const [tickets, total] = await queryBuilder.getManyAndCount();
     return {
       tickets,
