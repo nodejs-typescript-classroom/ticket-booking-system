@@ -1,4 +1,4 @@
-import { CallHandler, ExecutionContext, HttpException, Injectable, Logger, NestInterceptor } from '@nestjs/common';
+import { CallHandler, ExecutionContext, Injectable, Logger, NestInterceptor } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { catchError, Observable, tap, throwError } from 'rxjs';
 
@@ -24,8 +24,7 @@ export class LoggerInterceptor implements NestInterceptor {
       }),
       catchError((error: unknown) => {
         const response: Response = context.switchToHttp().getResponse();
-        const httpError = error as HttpException;
-        const statusCode = httpError.getStatus() ?? response.statusCode ?? undefined;
+        const statusCode = response.statusCode ?? 500;
         this.logger.error({
           method, url, statusCode, userAgent, ip, class: context.getClass().name, 
           handler: context.getHandler().name,

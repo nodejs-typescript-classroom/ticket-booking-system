@@ -86,10 +86,17 @@ describe('TicketsService', () => {
     expect(result.data.pageInfo).toHaveProperty('total', 1);
   });
   /**
+  given exist ticket id but with wrong userId
+   */
+  it('should reject with BadRequestException', async() => {
+    await expect(service.verifyTicket({ id: ticketId, userId: crypto.randomUUID() })).rejects.toThrow(BadRequestException);
+    expect(emitter.emit).toHaveBeenCalledTimes(0);
+  });
+  /**
   given exist not verified ticket id
    */
   it('should return verified uuid ticket and generate verify ticket event', async () => {
-    const result = await service.verifyTicket({ id: ticketId });
+    const result = await service.verifyTicket({ id: ticketId, userId: userId });
     expect(result.data.ticket).toHaveProperty('id', ticketId);
     expect(emitter.emit).toHaveBeenCalledTimes(1)
     expect(emitter.emit).toHaveBeenCalledWith('verify-ticket-event', {
@@ -101,7 +108,7 @@ describe('TicketsService', () => {
   given verified ticket id
    */
   it('should reject with BadRequestException', async() => {
-    await expect(service.verifyTicket({ id: ticketId })).rejects.toThrow(BadRequestException);
+    await expect(service.verifyTicket({ id: ticketId, userId: userId })).rejects.toThrow(BadRequestException);
     expect(emitter.emit).toHaveBeenCalledTimes(0);
   });
   /**

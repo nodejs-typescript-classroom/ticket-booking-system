@@ -51,6 +51,9 @@ export class VerifyTicketDto {
   @IsUUID()
   @IsNotEmpty()
   id: string;
+  @IsUUID()
+  @IsNotEmpty()
+  userId: string;
 }
 export class TicketResponse {
   @ValidateNested()

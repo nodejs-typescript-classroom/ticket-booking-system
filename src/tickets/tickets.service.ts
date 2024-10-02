@@ -63,6 +63,9 @@ export class TicketsService {
     if (updateTicket.entered == true) {
       throw new BadRequestException(`ticket has been verified`);
     }
+    if (updateTicket.userId !== ticketInfo.userId) {
+      throw new BadRequestException(`wrong ticket owner`);
+    }
     const updatedTicket = await this.ticketRepo.update(ticketInfo, { entered: true });
     const verifyTicketEvent = new VerifyTicketEvent();
     verifyTicketEvent.eventId = updatedTicket.eventId;

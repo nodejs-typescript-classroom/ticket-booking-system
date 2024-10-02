@@ -284,7 +284,8 @@ describe('AppController (e2e)', () => {
     const agent = request(app.getHttpServer());
     agent.patch('/tickets')
       .send({
-        id: verifyTicketId
+        id: verifyTicketId,
+        userId: attendeeUserId
       })
       .set('Authorization', accessToken)
       .expect(200)
